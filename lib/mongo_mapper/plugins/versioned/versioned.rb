@@ -236,14 +236,15 @@ module MongoMapper
 
       def version_at(version_number)
         case version_number
+          ver_at = self.class.version_model.where(:versioned_id => self._id.to_s)
         when :first # first possible version stored
-          self.class.version_model.where(:versioned_id => self._id.to_s).sort("#{self.class.versioned_number_field} asc").limit(1).first
+          ver_at = ver_at.sort("#{self.class.versioned_number_field} asc").limit(1)
         when :previous # version before this one.
-          self.class.version_model.where(:versioned_id => self._id.to_s, self.class.versioned_number_field => self[versioned_number_field] - 1).limit(1).first
+          ver_at = ver_at.where.self.class.versioned_number_field => self[versioned_number_field] - 1).limit(1)
         when :current # should be same as active
-          self.class.version_model.where(:versioned_id => self._id.to_s).sort("#{self.class.versioned_number_field} desc").limit(1).first
+          ver_at = ver_at.sort("#{self.class.versioned_number_field} desc").limit(1)
         else
-          self.class.version_model.first(:versioned_id => self._id.to_s, self.class.versioned_number_field => version_number) if (version_number > 0) && (version_number <= self[versioned_number_field])
+          ver_at = ver_at.where(self.class.versioned_number_field => version_number)
         end
       end
     end # Module Versioned
