@@ -23,7 +23,6 @@ module MongoMapper
         self.versioned_scope = nil
         rolling_back = false
         delete_newer = false
-        puts self.versioned_class_name.inspect
         super
       end
 
@@ -235,16 +234,16 @@ module MongoMapper
       end
 
       def version_at(version_number)
+        ver_at = self.class.version_model.where(:versioned_id => self._id.to_s)
         case version_number
-          ver_at = self.class.version_model.where(:versioned_id => self._id.to_s)
         when :first # first possible version stored
-          ver_at = ver_at.sort("#{self.class.versioned_number_field} asc").limit(1)
+          ver_at = ver_at.sort("#{self.class.versioned_number_field} asc").limit(1).first
         when :previous # version before this one.
-          ver_at = ver_at.where.self.class.versioned_number_field => self[versioned_number_field] - 1).limit(1)
+          ver_at = ver_at.where(self.class.versioned_number_field => self[versioned_number_field] - 1).limit(1).first
         when :current # should be same as active
-          ver_at = ver_at.sort("#{self.class.versioned_number_field} desc").limit(1)
+          ver_at = ver_at.sort("#{self.class.versioned_number_field} desc").limit(1).first
         else
-          ver_at = ver_at.where(self.class.versioned_number_field => version_number)
+          ver_at = ver_at.where(self.class.versioned_number_field => version_number).first
         end
       end
     end # Module Versioned

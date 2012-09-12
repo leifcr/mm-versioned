@@ -4,6 +4,7 @@ module MongoMapper
       module VersionedModel
         extend ActiveSupport::Concern
         included do
+          const_set(self.versioned_class_name.camelize.to_sym, Class.new).class_eval do
             include MongoMapper::Document
 
               key :version_number,  Integer
