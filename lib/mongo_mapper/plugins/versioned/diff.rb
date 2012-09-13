@@ -12,32 +12,39 @@ module MongoMapper
         def diff_html(version1, version2)
           return "<div class=\"diff error\">Cannot diff with a nil object...</div>" if version1.nil? || version2.nil?
           ret = "<div class=\"diff\">"
-          version1.data.keys.each do |key|
+          version1.data.keys.sort.each do |key|
+            key_title = "<div class=\"single_diff\"><div class=\"key_title\">#{key.to_s}</div><div class=\"key_content\">"
+            diffed =""
             Diffy::Diff.new("#{version1.content(key)}\n", "#{version2.content(key)}\n").each do |line|
-              diffed = case line
-                 when /^\+/ then "<div class=\"add\">#{line.sub(/^./, '').chomp}</div>"
-                 when /^-/  then "<div class=\"del\">#{line.sub(/^./, '').chomp}</div>"
-                 else nil
-               end
-              ret += "<div class=\"single_diff\"><div class=\"key_title\">#{key.to_s}</div>#{diffed}</div>" unless diffed.nil?
-            end
-          end
+              diffed += case line
+                when /^\+/ then "<div class=\"add\">#{line.sub(/^./, '').chomp}</div>"
+                when /^-/  then "<div class=\"del\">#{line.sub(/^./, '').chomp}</div>"
+                else ""
+              end #case
+            end # Diffy
+          ret += "#{key_title}#{diffed}</div></div>" unless diffed == ""
+          end # version1.data.keys.sort.each
           ret +="</div>"
-        end
+        end # diff_Html
 
         def diff_ascii(version1, version2)
           return "Nothing to diff with" if version1.nil? || version2.nil?
           ret = ""
-          version1.data.keys.each do |key|
-            title = "Key: #{key.to_s}"
-            ret += "#{title}\n#{"-"*title.length}\n"
+          version1.data.keys.sort.each do |key|
+            key_title = "Key: #{key.to_s}"
+            key_title += "\n#{"-"*key_title.length}"
+            diffed = ""
             Diffy::Diff.new("#{version1.content(key)}\n", "#{version2.content(key)}\n").each do |line|
-              ret += "#{line.chomp}\n"
-            end
-            ret += "\n"
-          end
+              diffed += case line
+                when /^\+/ then "#{line.chomp}\n"
+                when /^-/  then "#{line.chomp}\n"
+                else ""
+              end #case
+            end #Diffy
+            ret += "#{key_title}\n#{diffed}\n" unless diffed == ""
+          end # version1.data.keys.sort.each
           ret
-        end
+        end # diff_ascii(version1, version2)
 
       end # Module Callbacks
     end # Module Versioned
