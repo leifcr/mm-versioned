@@ -22,7 +22,7 @@ class Test::Unit::TestCase
   end
 
   def teardown
-    # DatabaseCleaner.clean
+    DatabaseCleaner.clean
   end
 
   # Make sure that each test case has a teardown
