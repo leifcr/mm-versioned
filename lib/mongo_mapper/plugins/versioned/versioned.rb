@@ -219,7 +219,7 @@ module MongoMapper
       end
 
       def rollback_destroy_versions(version)
-        destroy_versions(from_version_number, -1)
+        destroy_versions(version.version_number, -1)
         @delete_newer = true
         # set version_id and version_number to match version record
         self[versioned_id_field]     = version.version_id
