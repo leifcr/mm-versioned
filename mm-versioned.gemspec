@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email                         = 'leifcr@gmail.com'
   s.version                       = MongoMapper::Versioned::VERSION
   s.platform                      = Gem::Platform::RUBY
-  s.files                         = Dir.glob('lib/**/*') + %w[config.ru Gemfile Rakefile README.md]
+  s.files                         = Dir.glob('lib/**/*') + %w[Gemfile Rakefile README.md]
   s.test_files                    = Dir.glob('test/**/*')
 
   s.add_dependency 'i18n'
@@ -24,5 +24,4 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'rake'
   s.add_development_dependency 'shoulda'
-  s.add_development_dependency 'ruby-debug19'
 end

@@ -12,10 +12,10 @@ group :test do
   gem 'rails'
 end
 
-group :development do
-  gem "wirble"
-  gem "hirb"
-  gem "awesome_print"  
-end
+# group :development do
+#   gem "wirble"
+#   gem "hirb"
+#   gem "awesome_print"  
+# end
 
 gemspec
