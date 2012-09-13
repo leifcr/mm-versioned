@@ -66,14 +66,15 @@ module MongoMapper
         @_version = {
           :version_id     =>     BSON::ObjectId.new,
           :version_number =>     self.next_version_number(),
-          :doc            =>     self.versioned_document()
+          :doc            =>     self.prepare_versioned_document(),
+          :changes        =>     self.versioned_changes()
         }
       end
 
       def push_version
         return if ((!self.do_save_version) || (@_version === nil))
         # Rolling back?
-        if !@_version_changes.empty? && !delete_newer?
+        if !@_version[:changes].empty? && !delete_newer?
           clear_changes {
             self.versions.create(:data => @_version[:doc],
             :updater => self.updater,
@@ -113,22 +114,22 @@ module MongoMapper
         end
       end
 
-      def versioned_document
+      def prepare_versioned_document
         document = {}
         document.merge!(self.attributes)
         self.class.versioned_non_versioned_keys.each do |remove_key|
           document.delete(remove_key)
         end
-        set_versioned_changes()
         # document.delete(versioned_number_field) # TOOD: check if it's better to keep?
         document
       end
 
-      def set_versioned_changes
-        @_version_changes = self.changes
+      def versioned_changes
+        _version_changes = self.changes
         self.versioned_non_compare_keys.each do |remove_key|
-          @_version_changes.delete(remove_key)
+          _version_changes.delete(remove_key)
         end
+        _version_changes
       end
 
       def versions_count
@@ -167,40 +168,23 @@ module MongoMapper
         end
         version = self.version_at(version_number)
         if version && assocs_ok
+          rollback_remove_keys(version)
 
-          # remove keys by setting them to nil
-          remove_keys = self.keys.keys - version.data.keys - self.class.versioned_non_versioned_keys - ["created_at", "updated_at"]
-          remove_keys.each do |remove_key|
-            self.send(:"#{remove_key}=", nil)
-          end
-
-          # load back attributes
-          # cannot use attributes because of protected...
-          # self.attributes = version.data
+          # load attributes/data from version
           version.data.keys.each do |key|
             self.send(:"#{key}=", version.data[key])
           end
 
           # option to delete versions newer than the rollback one
-          if (options.delete(:delete_newer))
-            destroy_versions(version.version_number, -1)
-            @delete_newer = true
-            # set version_id and version_number to match version record
-            self[versioned_id_field]     = version.version_id
-            self[versioned_number_field] = version.version_number
-          end
+          rollback_destroy_versions(version) if (options.delete(:delete_newer))
 
           # default:
           # the rolled back version will be a "new" version, 
           # and all the other versions are just kept as they were
           # TODO option to set rolledback version without creating a "new" version ? 
           # skip_versioning might already do this?
-          if (force)
-            retval = save!(options)
-          else
-            retval = save(options)
-          end
-
+          retval = save!(options) if force
+          retval = save(options) unless force
         end
         @rolling_false = true
         @delete_newer = false
@@ -224,6 +208,24 @@ module MongoMapper
           ver_at = ver_at.where(:version_number => version_number).first
         end
       end
+
+    private
+      def rollback_remove_keys(version)
+        # remove keys by setting them to nil
+        remove_keys = self.keys.keys - version.data.keys - self.class.versioned_non_versioned_keys - ["created_at", "updated_at"]
+        remove_keys.each do |remove_key|
+          self.send(:"#{remove_key}=", nil)
+        end
+      end
+
+      def rollback_destroy_versions(version)
+        destroy_versions(from_version_number, -1)
+        @delete_newer = true
+        # set version_id and version_number to match version record
+        self[versioned_id_field]     = version.version_id
+        self[versioned_number_field] = version.version_number        
+      end
+
     end # Module Versioned
   end # Module plugins
 end # module MongoMapper
