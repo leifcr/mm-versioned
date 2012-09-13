@@ -8,7 +8,6 @@ module MongoMapper
             include MongoMapper::Document
 
               key :version_number,  Integer
-              #key :version_id, ObjectId #String, :typecast => ObjectId
               key :updater_message, String, :default => nil
               key :data, Hash # needed for comparison when saving/updating.
 
@@ -19,7 +18,9 @@ module MongoMapper
 
               def content(key)
                 cdata = self.data[key]
-                if cdata.respond_to?(:join)
+                if cdata.nil?
+                  ""
+                elsif cdata.respond_to?(:join)
                   cdata.join(" ")
                 else
                   cdata

@@ -3,6 +3,7 @@ require File.join(File.dirname(__FILE__), 'class_attributes')
 require File.join(File.dirname(__FILE__), 'versioned_model')
 require File.join(File.dirname(__FILE__), 'callbacks')
 require File.join(File.dirname(__FILE__), 'validations')
+require File.join(File.dirname(__FILE__), 'diff')
 I18n.load_path << File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'locale', 'en.yml'), __FILE__)
 
 module MongoMapper
@@ -11,18 +12,20 @@ module MongoMapper
 
       extend ActiveSupport::Concern
 
-      included do
-        include MongoMapper::Plugins::Versioned::Accessors
-        include MongoMapper::Plugins::Versioned::ClassAttributes
-        include MongoMapper::Plugins::Versioned::VersionedModel
-        include MongoMapper::Plugins::Versioned::Callbacks
-        include MongoMapper::Plugins::Versioned::Validations
-      end
+      include MongoMapper::Plugins::Versioned::Accessors
+      include MongoMapper::Plugins::Versioned::ClassAttributes
+      include MongoMapper::Plugins::Versioned::VersionedModel
+      include MongoMapper::Plugins::Versioned::Callbacks
+      include MongoMapper::Plugins::Versioned::Validations
+      include MongoMapper::Plugins::Versioned::Diff
 
       def initialize(*args)
-        self.versioned_scope = nil
         rolling_back = false
         delete_newer = false
+
+        # set default class attributes and model values
+        self[versioned_number_field] = 0
+        self[versioned_id_field] = BSON::ObjectId.new
         super
       end
 
@@ -48,11 +51,11 @@ module MongoMapper
       end
 
       def next_version_number
-        if self.version_number === 0
+        if self[versioned_number_field] === 0
           1
         else
           if self.versions.count === 0
-            self.version_number + 1
+            self[versioned_number_field] + 1
           else
             self.versions.first.version_number + 1
           end
@@ -96,7 +99,8 @@ module MongoMapper
         # write new version id and number to document, as it has been updated!
         self.write_attribute(self.class.versioned_id_field, version_id)
         self.write_attribute(self.class.versioned_number_field, version_number)
-        self.set(self.class.versioned_id_field => version_id, self.class.versioned_number_field => version_number)
+        self.set(self.class.versioned_id_field => version_id)
+        self.set(self.class.versioned_number_field => version_number)
         self.changed_attributes.clear
       end
 
@@ -130,16 +134,6 @@ module MongoMapper
       def versions_count
         self.class.version_model.count(:versioned_id => self._id.to_s)
       end
-
-      # this is through assoc!!!
-      # # won't allow to delete the current version!
-      # def versions(all=false)
-      #   if all
-      #     version_model.where(:versioned_id => self._id.to_s).order(self.class.versioned_id_field.desc)
-      #   else
-      #     version_model.where(:versioned_id => self._id.to_s).order(self.class.versioned_id_field.desc).limit(self.class.versioned_limit)
-      #   end
-      # end
 
       def destroy_version(version_number)
         if (version_number == :all)
@@ -217,33 +211,17 @@ module MongoMapper
         rollback(version_number, options.merge(:force => true))
       end
 
-      # TODO
-      def diff(key, version_number1, version_number2, *optional_format)
-        format = optional_format.first || :html #workaround for optional args in ruby1.8
-        version1 = self.version_at(version_number1)
-        version2 = self.version_at(version_number2)
-        # version_number1.data.
-        # version_number1.content
-
-        # Diffy::Diff.new(version1.content(key), version2.content(key)).each do |line|
-        #   case line
-        #     when /^\+/ then puts "line #{line.chomp} added"
-        #     when /^-/ then puts "line #{line.chomp} removed"
-        #   end
-        # end
-      end
-
       def version_at(version_number)
         ver_at = self.class.version_model.where(:versioned_id => self._id.to_s)
         case version_number
         when :first # first possible version stored
-          ver_at = ver_at.sort("#{self.class.versioned_number_field} asc").limit(1).first
+          ver_at = ver_at.sort(:version_number.asc).limit(1).first
         when :previous # version before this one.
-          ver_at = ver_at.where(self.class.versioned_number_field => self[versioned_number_field] - 1).limit(1).first
+          ver_at = ver_at.where(:version_number => self[versioned_number_field] - 1).limit(1).first
         when :current # should be same as active
-          ver_at = ver_at.sort("#{self.class.versioned_number_field} desc").limit(1).first
+          ver_at = ver_at.sort(:version_number.desc).limit(1).first
         else
-          ver_at = ver_at.where(self.class.versioned_number_field => version_number).first
+          ver_at = ver_at.where(:version_number => version_number).first
         end
       end
     end # Module Versioned

@@ -22,7 +22,7 @@ class Test::Unit::TestCase
   end
 
   def teardown
-    DatabaseCleaner.clean
+    # DatabaseCleaner.clean
   end
 
   # Make sure that each test case has a teardown
@@ -36,4 +36,12 @@ class Test::Unit::TestCase
       super
     end
   end
+
+  custom_matcher :respond_to do |receiver, matcher, args|
+    respond_to = args[0]
+    matcher.positive_failure_message = "Expected #{receiver.class.name} to have method #{respond_to}, but it didn't"
+    matcher.negative_failure_message = "Expected #{receiver.class.name} to NOT have method #{respond_to}, but it did"
+    receiver.respond_to?(respond_to)
+  end
+
 end

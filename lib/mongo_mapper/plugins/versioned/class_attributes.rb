@@ -11,15 +11,10 @@ module MongoMapper
           self.versioned_keep_all_versions ||= false
 
           class_attribute :versioned_number_field
-          self.versioned_number_field ||= :version_number          
-          key versioned_number_field, Integer, :default => 0
+          self.versioned_number_field ||= :version_number
 
           class_attribute :versioned_id_field
           self.versioned_id_field ||= :version_id
-
-          #key :version_id, ObjectId, :default => lambda { BSON::ObjectId.new }
-          key versioned_id_field, ObjectId, :default => lambda { BSON::ObjectId.new }
-          # key versioned_id_field, String#, :typecast => ObjectId #BSON::ObjectId# => "monkey" #, :default => BSON::ObjectId.new
 
           class_attribute :versioned_class_name
           self.versioned_class_name ||= "version"

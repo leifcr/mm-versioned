@@ -175,7 +175,6 @@ class VersioningTest < Test::Unit::TestCase
         @post.versions.first.updater.should == user
       end
     end #context 'assigning additonal data' do
-
   end # context 'Versioned post' do
 
   # TODO
