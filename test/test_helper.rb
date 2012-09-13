@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'bundler/setup'
-require 'rails'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
@@ -8,7 +7,7 @@ require 'versioned'
 
 Bundler.require(:default, :test)
 
-MongoMapper.connection = Mongo::Connection.new('127.0.0.1', 27017, :logger => Rails.logger)
+MongoMapper.connection = Mongo::Connection.new('127.0.0.1', 27017)
 MongoMapper.database = "mm-versioned-test"
 
 Dir["#{File.dirname(__FILE__)}/models/*.rb"].each {|file| require file}

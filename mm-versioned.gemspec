@@ -14,14 +14,6 @@ Gem::Specification.new do |s|
   s.test_files                    = Dir.glob('test/**/*')
 
   s.add_dependency 'i18n'
-  # s.add_dependency 'differ'
   s.add_dependency 'diffy'
-  s.add_dependency 'builder'
-  s.add_dependency 'bson'
-  s.add_dependency 'activesupport'
-  s.add_dependency 'i18n'
-  s.add_dependency 'mongo_mapper', '~> 0.11.2'
-
-  s.add_development_dependency 'rake'
-  s.add_development_dependency 'shoulda'
+  s.add_dependency 'mongo_mapper', '~> 0.12.0'
 end
