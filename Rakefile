@@ -13,12 +13,12 @@ namespace :test do
   end
 
 #TODO Add performance
-  # Rake::TestTask.new(:performance) do |test|
-  #   test.libs << 'test'
-  #   test.ruby_opts << '-rubygems'
-  #   test.pattern = 'test/performance/**/*.rb'
-  #   test.verbose = true 
-  # end
+  Rake::TestTask.new(:performance) do |test|
+    test.libs << 'test'
+    test.ruby_opts << '-rubygems'
+    test.pattern = 'test/performance/test/**/*.rb'
+    test.verbose = true 
+  end
 end
 
 task :default => 'test:units'
