@@ -58,6 +58,24 @@ class TestVersioningClassAttributes < Test::Unit::TestCase
       @p.save
       @p.versions_count.should == (num_versions + 1)
     end
-
   end # context 'Versioned post' do
+
+  # TODO
+  # context 'Versioned post with different version class' do
+  #   setup do
+  #     @post = PostWithHistoryClassName.create(:title => 'Sugar Donkey')
+  #     @post.title = "Monkey Business"
+  #     @post.save
+  #   end
+  #   should 'verify custom class on model' do
+  #     Post.version_model.name.should == "Post::History"
+  #   end
+  #   should 'have 2 versions' do
+  #     @post.versions_count.should == 2
+  #   end
+  #   should 'be able to rollback' do
+  #     @post.rollback(:previous)
+  #     @post.title.should == "Sugar Donkey"
+  #   end
+  # end
 end

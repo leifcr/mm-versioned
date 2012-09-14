@@ -40,10 +40,13 @@ module MongoMapper
       def save(options={})
         # store some options
         self.do_save_version = true;
-        self.do_save_version = false if options.delete(:skip_versioning)
-        # check if the scope field is equal to the scope value.
-        if (versioned_scope != nil) # any scoping for versioning? e.g. published/draft etc
-          self.do_save_version = false if eval(versioned_scope)
+        if options.delete(:skip_versioning)
+          self.do_save_version = false 
+          return
+        end
+        # check if a scope is used for checking versions
+        if (self.class.versioned_scope != nil) # any scoping for versioning? e.g. published/draft etc
+          self.do_save_version = false if !eval(self.class.versioned_scope)
         end
         self.updater = options.delete(:updater)
         self.updater_message = options.delete(:updater_message)
@@ -54,7 +57,7 @@ module MongoMapper
         if self[versioned_number_field] === 0
           1
         else
-          if self.versions.count === 0
+          if self.versions_count === 0
             self[versioned_number_field] + 1
           else
             self.versions.first.version_number + 1
@@ -63,6 +66,7 @@ module MongoMapper
       end
 
       def prepare_version
+        return if !self.do_save_version
         @_version = {
           :version_id     =>     BSON::ObjectId.new,
           :version_number =>     self.next_version_number(),
@@ -73,10 +77,10 @@ module MongoMapper
 
       def push_version
         return if ((!self.do_save_version) || (@_version === nil))
-        # Rolling back?
         if !@_version[:changes].empty? && !delete_newer?
           clear_changes {
-            self.class.version_model.create(:data => @_version[:doc],
+            # must use the association to create instead of the model. (Else a reload is needed)
+            self.versions.create(:data => @_version[:doc],
             :updater => self.updater,
             :updater_message => self.updater_message,
             :versioned => self,
@@ -107,7 +111,7 @@ module MongoMapper
 
       def prune_versions
         if self.class.versioned_limit && !self.class.versioned_keep_all_versions
-          limit = self.versions.count - self.class.versioned_limit
+          limit = self.versions_count - self.class.versioned_limit
           if limit > 0
             self.versions.destroy_all(:sort => "#{versioned_number_field.to_s} asc", :limit => limit)
           end
@@ -168,12 +172,8 @@ module MongoMapper
         end
         version = self.version_at(version_number)
         if version && assocs_ok
-          rollback_remove_keys(version)
-
-          # load attributes/data from version
-          version.data.keys.each do |key|
-            self.send(:"#{key}=", version.data[key])
-          end
+          remove_keys_from_reciever(version, self)
+          set_keys_from_version(version, self)
 
           # option to delete versions newer than the rollback one
           rollback_destroy_versions(version) if (options.delete(:delete_newer))
@@ -209,12 +209,30 @@ module MongoMapper
         end
       end
 
+      def original_document_at(version_number, options = {})
+        version = version_at(version_number)
+        retdoc = self.class.new
+        set_keys_from_version(version, retdoc)
+        remove_keys_from_reciever(version, retdoc)
+        retdoc._id = self._id unless options.delete(:new_id)
+        retdoc
+      end
+
     private
-      def rollback_remove_keys(version)
+
+    
+      def set_keys_from_version(version, reciever)
+        # load attributes/data from version
+          version.data.keys.each do |key|
+            reciever.send(:"#{key.to_s}=", version.data[key])
+          end
+      end
+
+      def remove_keys_from_reciever(version, reciever)
         # remove keys by setting them to nil
-        remove_keys = self.keys.keys - version.data.keys - self.class.versioned_non_versioned_keys - ["created_at", "updated_at"]
+        remove_keys = reciever.keys.keys - version.data.keys - reciever.class.versioned_non_versioned_keys - ["created_at", "updated_at"]
         remove_keys.each do |remove_key|
-          self.send(:"#{remove_key}=", nil)
+          reciever.send(:"#{remove_key.to_s}=", nil)
         end
       end
 

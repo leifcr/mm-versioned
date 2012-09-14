@@ -7,7 +7,7 @@ class PostWithCustomClassAttributes
   self.versioned_id_field = :super_version_id
   self.versioned_non_versioned_keys = [ "_id", "_type", "#{self.versioned_number_field.to_s}", "#{self.versioned_id_field.to_s}", "slug" ]
   self.versioned_non_compare_keys = []
-  self.versioned_scope = "self.title == \"cow\""
+  self.versioned_scope = "self.title != \"cow\""
 
   attr_accessible :title, :slug
 

@@ -39,6 +39,38 @@ class VersioningTest < Test::Unit::TestCase
         @post.version_at(2).data["title"].should == "Monkey Business"
       end
 
+      should 'get first document as original document type, with same id' do
+        original_doc = @post.original_document_at(:first)
+        original_doc.is_a? @post.class
+        original_doc.title.should == 'Sugar Donkey'
+        original_doc.length.should == 41
+        original_doc._id.should == @post._id
+      end
+
+      should 'get first document as original document type, with new id' do
+        original_doc = @post.original_document_at(:first, {:new_id => true})
+        original_doc.is_a? @post.class
+        original_doc.title.should == 'Sugar Donkey'
+        original_doc.length.should == 41
+        original_doc._id.should_not == @post._id
+      end
+
+      should 'get previous document as original document type, with same id' do
+        original_doc = @post.original_document_at(:previous)
+        original_doc.is_a? @post.class
+        original_doc.title.should == 'Monkey Business'
+        original_doc.length.should == 12
+        original_doc._id.should == @post._id
+      end
+
+      should 'get previous document as original document type, with new id' do
+        original_doc = @post.original_document_at(:previous, {:new_id => true})
+        original_doc.is_a? @post.class
+        original_doc.title.should == 'Monkey Business'
+        original_doc.length.should == 12
+        original_doc._id.should_not == @post._id
+      end
+
       should "verify length and title on each version" do
         @post.versions[0].data["title"] == "Cat Fighter"
         @post.versions[0].data["length"].should == 500
@@ -80,7 +112,7 @@ class VersioningTest < Test::Unit::TestCase
           @post.length.should == 12
         end
         should 'verify number of versions' do
-          @post.versions.reload.count.should == 4
+          @post.versions.count.should == 4
         end
         should 'verify version number' do
           @post.version_number.should == 4
@@ -175,24 +207,6 @@ class VersioningTest < Test::Unit::TestCase
         @post.versions.first.updater.should == user
       end
     end #context 'assigning additonal data' do
-  end # context 'Versioned post' do
 
-  # TODO
-  # context 'Versioned post with different version class' do
-  #   setup do
-  #     @post = PostWithHistoryClassName.create(:title => 'Sugar Donkey')
-  #     @post.title = "Monkey Business"
-  #     @post.save
-  #   end
-  #   should 'verify custom class on model' do
-  #     Post.version_model.name.should == "Post::History"
-  #   end
-  #   should 'have 2 versions' do
-  #     @post.versions_count.should == 2
-  #   end
-  #   should 'be able to rollback' do
-  #     @post.rollback(:previous)
-  #     @post.title.should == "Sugar Donkey"
-  #   end
-  # end
+  end # context 'Versioned post' do
 end
