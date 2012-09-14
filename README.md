@@ -6,11 +6,14 @@ This has some ideas from all of mentioned, but with still a new implementation.
 
 [![Build Status](https://secure.travis-ci.org/leifcr/mm-versioned.png)](http://travis-ci.org/leifcr/mm-versioned) [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/leifcr/mm-versioned)
 
+
 Installation
 ------------------------------------
+
 Until it's released as a gem:
 
     gem 'mm-versioned', :git => 'https://github.com/leifcr/mm-versioned.git'
+
 
 Usage
 ------------------------------------
@@ -120,26 +123,31 @@ NOTE: The ID of the document is set to the same as the original. If you save/upd
 
 _Read the tests to see other options/methods_
 
+
 Problems or Questions?
 ------------------------------------
+
 Twitter @leifcr
 Use [github issues](https://github.com/leifcr/mm-versioned/issues) for bugs
 
+
 Note on Patches/Pull Requests
 ------------------------------------
+
 - Make your feature addition or bug fix.
 - Write tests! Travis-CI!
 
+
 Thanks
 ------------------------------------
-John Nunemaker, Brandon Keepers & others - [_MongoMapper_](github.com/jnunemaker/mongomapper) - 
-10gen  - [_MongoDB_](http://www.mongodb.org)
 
-Artha42 - [_mm-versionable_](https://github.com/artha42/mm-versionable)
-Gigamo - [_mongo_mapper_acts_as_versioned_](https://github.com/gigamo/mongo_mapper_acts_as_versioned)
-Justin Karimi - [_mm-revisionable_](https://github.com/billy-ran-away/mm-revisionable)
+John Nunemaker, Brandon Keepers & others - [_MongoMapper_](github.com/jnunemaker/mongomapper) 
+10gen  - [_MongoDB_](http://www.mongodb.org) 
+Artha42 - [_mm-versionable_](https://github.com/artha42/mm-versionable) 
+Gigamo - [_mongo_mapper_acts_as_versioned_](https://github.com/gigamo/mongo_mapper_acts_as_versioned) 
+Justin Karimi - [_mm-revisionable_](https://github.com/billy-ran-away/mm-revisionable) 
 Christopher Burnett - [_versioned_](https://github.com/twoism/versioned) 
-Alex Wolfe - [_mongomapper-versioned_](https://github.com/alexkwolfe/mongomapper-versioned)
+Alex Wolfe - [_mongomapper-versioned_](https://github.com/alexkwolfe/mongomapper-versioned) 
 
 Copyright
 ------------------------------------
