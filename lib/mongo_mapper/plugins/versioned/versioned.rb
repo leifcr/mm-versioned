@@ -76,7 +76,7 @@ module MongoMapper
         # Rolling back?
         if !@_version[:changes].empty? && !delete_newer?
           clear_changes {
-            self.versions.create(:data => @_version[:doc],
+            self.class.version_model.create(:data => @_version[:doc],
             :updater => self.updater,
             :updater_message => self.updater_message,
             :versioned => self,
