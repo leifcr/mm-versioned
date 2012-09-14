@@ -127,8 +127,7 @@ _Read the tests to see other options/methods_
 Problems or Questions?
 ------------------------------------
 
-Twitter @leifcr
-
+Twitter @leifcr<br />
 Use [github issues](https://github.com/leifcr/mm-versioned/issues) for bugs
 
 
@@ -142,19 +141,13 @@ Note on Patches/Pull Requests
 Thanks
 ------------------------------------
 
-John Nunemaker, Brandon Keepers & others - [_MongoMapper_](github.com/jnunemaker/mongomapper)
-
-10gen  - [_MongoDB_](http://www.mongodb.org)
-
-Artha42 - [_mm-versionable_](https://github.com/artha42/mm-versionable)
-
-Gigamo - [_mongo_mapper_acts_as_versioned_](https://github.com/gigamo/mongo_mapper_acts_as_versioned)
-
-Justin Karimi - [_mm-revisionable_](https://github.com/billy-ran-away/mm-revisionable)
-
-Christopher Burnett - [_versioned_](https://github.com/twoism/versioned)
-
-Alex Wolfe - [_mongomapper-versioned_](https://github.com/alexkwolfe/mongomapper-versioned)
+John Nunemaker, Brandon Keepers & others - [_MongoMapper_](github.com/jnunemaker/mongomapper)<br />
+10gen  - [_MongoDB_](http://www.mongodb.org)<br />
+Artha42 - [_mm-versionable_](https://github.com/artha42/mm-versionable)<br />
+Gigamo - [_mongo_mapper_acts_as_versioned_](https://github.com/gigamo/mongo_mapper_acts_as_versioned)<br />
+Justin Karimi - [_mm-revisionable_](https://github.com/billy-ran-away/mm-revisionable)<br />
+Christopher Burnett - [_versioned_](https://github.com/twoism/versioned)<br />
+Alex Wolfe - [_mongomapper-versioned_](https://github.com/alexkwolfe/mongomapper-versioned)<br />
 
 
 Copyright
