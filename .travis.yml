@@ -10,3 +10,5 @@ bundler_args: --without development
 branches:
   except:
     - development
+services:
+  - mongodb
