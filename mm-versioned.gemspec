@@ -5,9 +5,10 @@ Gem::Specification.new do |s|
   s.name                          = 'mm-versioned'
   s.homepage                      = 'http://github.com/leifcr/mm-versioned'
   s.summary                       = 'A MongoMapper extension adding Versioning'
+
   s.require_paths                 = ['lib']
   s.authors                       = ['Leif Ringstad']
-  s.email                         = 'leifcr@gmail.com'
+  s.email                         = ['leifcr@gmail.com']
   s.version                       = MongoMapper::Versioned::VERSION
   s.platform                      = Gem::Platform::RUBY
   s.files                         = Dir.glob('lib/**/*') + %w[Gemfile Rakefile README.md]
