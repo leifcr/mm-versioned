@@ -1,3 +1,4 @@
+require "bundler/gem_tasks"
 require 'rubygems'
 require 'rake'
 
@@ -23,14 +24,3 @@ end
 
 task :default => 'test:units'
 
-desc 'Builds the gem'
-task :build do
-  sh 'gem build mm-versioned.gemspec'
-  Dir.mkdir('pkg') unless File.directory?('pkg')
-  sh "mv mm-versioned-#{MongoMapper::Versioned::VERSION}.gem pkg/mm-versioned-#{MongoMapper::Versioned::VERSION}.gem"
-end
-
-desc 'Builds and Installs the gem'
-task :install => :build do
-  sh "gem install pkg/mm-versioned-#{MongoMapper::Versioned::VERSION}.gem"
-end
