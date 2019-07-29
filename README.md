@@ -1,5 +1,8 @@
 mm-versioned
 ============
+
+NOTE: No longer maintained, as mongomapper is no longer maintained.
+
 A MongoMapper plugin which enables document versioning.
 Even though there are mm-revisionable, mm-versionable, versioned and mongomapper-versioned, I needed different features.
 This has some ideas from all of mentioned, but with still a new implementation.
